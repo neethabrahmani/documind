@@ -10,7 +10,7 @@
 
 ---
 
-## 📑 Table of Contents
+##  Table of Contents
 1. [Approach / Technical Write-up (Under 200 Words)](#-approach--technical-write-up)
 2. [Key Features](#-key-features)
 3. [Architecture & Technology Stack](#-architecture--technology-stack)
@@ -28,7 +28,7 @@
 
 ---
 
-## 💡 Approach / Technical Write-up
+##  Approach / Technical Write-up
 
 DocuMind is engineered as a privacy-centric, hybrid document intelligence system that converts unstructured PDFs and image scans into structured executive summaries without mandating third-party AI keys.
 
@@ -40,23 +40,23 @@ Client-side utilities enable multi-format reporting, exporting structured digest
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
-- 📁 **Universal Document Ingestion**: Seamless drag-and-drop zone and native file picker supporting `.pdf`, `.png`, `.jpg`, `.jpeg`, and `.webp`.
-- ⚡ **Zero-Dependency Offline Operation**: Runs completely out of the box with zero external API key requirements using local extractive NLP.
-- 🤖 **Optional Gemini AI Flash**: Optional environment variable integration (`GEMINI_API_KEY`) for hybrid generative AI abstractive summaries.
-- 🔍 **Server-Side Tesseract OCR**: Converts scanned documents, receipts, and invoice images into readable text with real-time recognition confidence scoring.
-- 📊 **Target Length Control**:
+-  **Universal Document Ingestion**: Seamless drag-and-drop zone and native file picker supporting `.pdf`, `.png`, `.jpg`, `.jpeg`, and `.webp`.
+-  **Zero-Dependency Offline Operation**: Runs completely out of the box with zero external API key requirements using local extractive NLP.
+-  **Optional Gemini AI Flash**: Optional environment variable integration (`GEMINI_API_KEY`) for hybrid generative AI abstractive summaries.
+-  **Server-Side Tesseract OCR**: Converts scanned documents, receipts, and invoice images into readable text with real-time recognition confidence scoring.
+-  **Target Length Control**:
   - **Short Preset** (~50–100 words): High-level executive brief.
   - **Medium Preset** (~150–250 words): Balanced conceptual breakdown with core metrics.
   - **Long Preset** (~400–600 words): In-depth comprehensive analysis capturing all thematic sections.
-- 💡 **Automated Key Takeaways**: Extracts 3–5 distinct, non-overlapping bullet points highlighting core definitions, figures, and conclusions.
-- 📤 **Multi-Format Export Suite**:
+-  **Automated Key Takeaways**: Extracts 3–5 distinct, non-overlapping bullet points highlighting core definitions, figures, and conclusions.
+-  **Multi-Format Export Suite**:
   - **Copy to Clipboard** with animated visual feedback.
   - **Download Plain Text (`.txt`)** structured report.
   - **Download Markdown (`.md`)** with GitHub tables and blockquotes.
   - **Download Formatted PDF (`.pdf`)** with brand banners, metadata badges, and callout cards.
-- 📱 **Fully Responsive UI**: Mobile-first layout crafted with Tailwind CSS and Lucide icons.
+-  **Fully Responsive UI**: Mobile-first layout crafted with Tailwind CSS and Lucide icons.
 
 ---
 
@@ -82,7 +82,7 @@ DocuMind Technical Architecture
                ▼                               ▼
 ┌──────────────────────────────┐ ┌──────────────────────────────┐
 │  Extractive Offline Engine   │ │   Optional Gemini Flash AI   │
-│  • Sentence Tokenizer        │ │   • process.env.GEMINI_KEY   │
+│  • Sentence Tokenizer        │ │  • process.env.GEMINI_API_KEY |
 │  • TF-ISF Salience Scoring   │ │   • Abstractive Synthesis    │
 │  • MMR De-Duplication        │ │   • JSON Structured Output   │
 └──────────────────────────────┘ └──────────────────────────────┘
@@ -99,7 +99,7 @@ DocuMind Technical Architecture
 
 ---
 
-## 🔄 Document Processing Pipeline
+##  Document Processing Pipeline
 
 ### 1. PDF Text Extraction
 - Server-side parsing in [`lib/extractors/pdf-extractor.ts`](lib/extractors/pdf-extractor.ts) converts binary PDF streams into normalized strings.
@@ -121,7 +121,7 @@ DocuMind Technical Architecture
 
 ---
 
-## 📏 Summary Length Modes
+##  Summary Length Modes
 
 | Preset | Target Word Count | Typical Compression | Description |
 | :--- | :--- | :--- | :--- |
@@ -131,7 +131,7 @@ DocuMind Technical Architecture
 
 ---
 
-## 💾 Multi-Format Export Engine
+##  Multi-Format Export Engine
 
 Exports include document title, preset mode, word counts, executive narrative, and numbered key points:
 - **Copy to Clipboard**: Formatted ASCII report copied directly to system clipboard.
@@ -141,7 +141,7 @@ Exports include document title, preset mode, word counts, executive narrative, a
 
 ---
 
-## 🛡 Error Handling & Edge Cases
+##  Error Handling & Edge Cases
 
 | Edge Case | Handling Mechanism | User Feedback |
 | :--- | :--- | :--- |
@@ -153,7 +153,7 @@ Exports include document title, preset mode, word counts, executive narrative, a
 
 ---
 
-## 🚀 Local Installation & Setup
+##  Local Installation & Setup
 
 ### Prerequisites
 - **Node.js**: v18.17.0 or higher
@@ -182,7 +182,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🔐 Environment Variables
+##  Environment Variables
 
 Create `.env.local` in the project root:
 
@@ -196,7 +196,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 ---
 
-## ☁️ Deployment Guide (Vercel)
+##  Deployment Guide (Vercel)
 
 DocuMind is optimized for 1-click deployment to **Vercel**:
 
@@ -210,7 +210,7 @@ DocuMind is optimized for 1-click deployment to **Vercel**:
 
 ---
 
-## 🧪 Testing & Verification
+##  Testing & Verification
 
 Run automated test suites and production build:
 
@@ -231,5 +231,5 @@ DocuMind includes sample documents in `public/samples/` for 1-click testing:
 
 ---
 
-## 📄 License
+##  License
 MIT License. Created for the Technical Assessment Project.
