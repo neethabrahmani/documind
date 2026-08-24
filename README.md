@@ -163,10 +163,10 @@ Exports include document title, preset mode, word counts, executive narrative, a
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/neethabrahmani/documind-document-summary-assistant.git
+git clone https://github.com/neethabrahmani/documind.git
 
 # 2. Navigate to project root
-cd documind-document-summary-assistant
+cd documind
 
 # 3. Install dependencies
 npm install
