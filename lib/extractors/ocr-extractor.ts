@@ -1,4 +1,6 @@
 import { createWorker } from "tesseract.js";
+import fs from "fs";
+import path from "path";
 import os from "os";
 
 export interface OcrExtractionResult {
@@ -39,14 +41,35 @@ export function cleanOcrText(rawText: string): string {
 
 /**
  * Executes OCR on an image buffer (PNG/JPG/JPEG/WEBP) server-side
- * Configured with os.tmpdir() for 100% compatibility in Vercel Serverless / AWS Lambda
+ * Uses pre-bundled local traineddata cache for sub-second execution on Vercel Serverless
  */
 export async function extractOcr(buffer: Buffer): Promise<OcrExtractionResult> {
   let worker: any = null;
   try {
     const tmpDir = os.tmpdir();
+    const tmpTrainedData = path.join(tmpDir, "eng.traineddata");
+
+    // Copy bundled traineddata to /tmp cache if not yet present
+    if (!fs.existsSync(tmpTrainedData)) {
+      const candidates = [
+        path.join(process.cwd(), "eng.traineddata"),
+        path.join(process.cwd(), "public", "eng.traineddata"),
+      ];
+      for (const cand of candidates) {
+        if (fs.existsSync(cand)) {
+          try {
+            fs.copyFileSync(cand, tmpTrainedData);
+            break;
+          } catch {
+            // Ignore copy failure
+          }
+        }
+      }
+    }
+
     worker = await createWorker("eng", 1, {
       cachePath: tmpDir,
+      gzip: false,
       logger: () => {},
     });
 
