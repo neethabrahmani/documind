@@ -60,7 +60,7 @@ Client-side utilities enable multi-format reporting, exporting structured digest
 
 ---
 
-## 🛠 Architecture & Technology Stack
+##  Architecture & Technology Stack
 
 ```
 DocuMind Technical Architecture
