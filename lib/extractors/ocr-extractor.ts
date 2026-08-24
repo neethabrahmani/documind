@@ -1,4 +1,5 @@
 import { createWorker } from "tesseract.js";
+import os from "os";
 
 export interface OcrExtractionResult {
   success: boolean;
@@ -38,14 +39,23 @@ export function cleanOcrText(rawText: string): string {
 
 /**
  * Executes OCR on an image buffer (PNG/JPG/JPEG/WEBP) server-side
+ * Configured with os.tmpdir() for 100% compatibility in Vercel Serverless / AWS Lambda
  */
 export async function extractOcr(buffer: Buffer): Promise<OcrExtractionResult> {
   let worker: any = null;
   try {
-    worker = await createWorker("eng");
+    const tmpDir = os.tmpdir();
+    worker = await createWorker("eng", 1, {
+      cachePath: tmpDir,
+      logger: () => {},
+    });
+
     const ret = await worker.recognize(buffer);
     const rawText = ret?.data?.text || "";
-    const confidence = typeof ret?.data?.confidence === "number" ? Math.round(ret.data.confidence) : undefined;
+    const confidence =
+      typeof ret?.data?.confidence === "number"
+        ? Math.round(ret.data.confidence)
+        : undefined;
 
     const cleanedText = cleanOcrText(rawText);
     const words = cleanedText ? cleanedText.split(/\s+/).filter(Boolean) : [];

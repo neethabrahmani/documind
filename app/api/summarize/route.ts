@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateSummary } from "@/lib/summarizers";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +16,10 @@ export async function POST(request: NextRequest) {
           success: false,
           message: "Document text is required for summarization.",
         },
-        { status: 400 }
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
       );
     }
 
@@ -28,18 +33,24 @@ export async function POST(request: NextRequest) {
         success: true,
         ...result,
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   } catch (error: any) {
     console.error("API /api/summarize error:", error);
     return NextResponse.json(
       {
         success: false,
-        message: `An error occurred during summarization: ${
+        message: `Summarization failed: ${
           error?.message || "Internal server error"
         }`,
       },
-      { status: 500 }
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   }
 }

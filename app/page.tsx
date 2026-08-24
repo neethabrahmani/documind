@@ -54,7 +54,16 @@ export default function HomePage() {
         body: formData,
       });
 
-      const data: ExtractionResult = await response.json();
+      let data: any = null;
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const rawText = await response.text();
+        throw new Error(
+          `Server returned error (${response.status}): ${rawText.slice(0, 120)}`
+        );
+      }
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to extract text from document.");
@@ -89,7 +98,16 @@ export default function HomePage() {
         }),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const rawText = await response.text();
+        throw new Error(
+          `Server returned error (${response.status}): ${rawText.slice(0, 120)}`
+        );
+      }
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Failed to generate document summary.");
