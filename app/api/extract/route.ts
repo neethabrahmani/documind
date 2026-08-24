@@ -6,6 +6,19 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+/**
+ * Timeout race helper to guarantee the API always responds with valid JSON
+ * before Vercel's serverless gateway timeout closes the connection.
+ */
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutErrorMsg: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(timeoutErrorMsg)), timeoutMs)
+    ),
+  ]);
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -57,9 +70,14 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Process PDF Extraction (Phase 3)
+    // Process PDF Extraction with 8.5s timeout guard
     if (isPdf) {
-      const result = await extractPdf(buffer);
+      const result = await withTimeout(
+        extractPdf(buffer),
+        8500,
+        "PDF extraction timed out. The file may contain complex vector streams."
+      );
+
       if (!result.success) {
         return NextResponse.json(result, {
           status: 422,
@@ -75,22 +93,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Process Image OCR Extraction (Phase 4)
+    // Process Image OCR Extraction with 8.5s timeout guard
     if (isImage) {
-      const ocrResult = await extractOcr(buffer);
-      if (!ocrResult.success) {
-        return NextResponse.json(ocrResult, {
-          status: 422,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-      return NextResponse.json(
-        { ...ocrResult, extractionMethod: "ocr" },
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
+      try {
+        const ocrResult = await withTimeout(
+          extractOcr(buffer),
+          8500,
+          "Serverless OCR execution exceeded the 8s time budget."
+        );
+
+        if (!ocrResult.success) {
+          return NextResponse.json(ocrResult, {
+            status: 422,
+            headers: { "Content-Type": "application/json" },
+          });
         }
-      );
+        return NextResponse.json(
+          { ...ocrResult, extractionMethod: "ocr" },
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      } catch (ocrErr: any) {
+        // Return structured JSON fallback instead of letting Vercel timeout
+        return NextResponse.json(
+          {
+            success: false,
+            message: `OCR processing took too long on the serverless instance: ${ocrErr?.message || "Timeout"}. Please upload a smaller/cropped image.`,
+            isScanned: true,
+            requiresOcr: true,
+          },
+          {
+            status: 422,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
     }
 
     return NextResponse.json(
